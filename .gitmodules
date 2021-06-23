@@ -1,0 +1,18 @@
+[submodule "entt"]
+	path = entt
+	url = https://github.com/ExplosionEngine/entt.git
+[submodule "glfw"]
+	path = glfw
+	url = https://github.com/ExplosionEngine/glfw.git
+[submodule "glm"]
+	path = glm
+	url = https://github.com/ExplosionEngine/glm.git
+[submodule "googletest"]
+	path = googletest
+	url = https://github.com/ExplosionEngine/googletest.git
+[submodule "rapidjson"]
+	path = rapidjson
+	url = https://github.com/ExplosionEngine/rapidjson.git
+[submodule "taskflow"]
+	path = taskflow
+	url = https://github.com/ExplosionEngine/taskflow.git
