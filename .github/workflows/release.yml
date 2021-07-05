@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  release-macos:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Update SubModules
+        run: |
+          git submodule init
+          git submodule update
+          
+      - name: Create Archive Directories
+        run: |
+          mkdir MacOS
+          mkdir MacOS/entt
+          mkdir MacOS/entt/Include
+          mkdir MacOS/glfw
+          mkdir MacOS/glfw/Include
+          mkdir MacOS/glfw/Lib
+          mkdir MacOS/glfw/Lib/Debug
+          mkdir MacOS/glfw/Lib/Release
+      - name: Archiving EnTT
+        run: |
+          cp -r entt/single_include/entt MacOS/entt/Include
+          
+      - name: Building GLFW
+        run: |
+          mkdir glfw/build-debug
+          cmake -S glfw -B glfw/build-debug -DCMAKE_BUILD_TYPE=Debug -DGLFW_BUILD_EXAMPLES=false -DGLFW_BUILD_TESTS=false -DGLFW_BUILD_DOCS=false
+          cmake --build glfw/build-debug
+          mkdir glfw/build-release
+          cmake -S glfw -B glfw/build-release -DCMAKE_BUILD_TYPE=Release -DGLFW_BUILD_EXAMPLES=false -DGLFW_BUILD_TESTS=false -DGLFW_BUILD_DOCS=false
+          cmake --build glfw/build-release
+      
+      - name: Archiving GLFW
+        run: |
+          cp glfw/build-debug/src/libglfw3.a MacOS/glfw/Lib/Debug
+          cp glfw/build-release/src/libglfw3.a MacOS/glfw/Lib/Release
+          cp -r glfw/include/GLFW MacOS/glfw/Include/GLFW
+      
+      - name: Zip Release Package
+        run: |
+          zip -r MacOS MacOS
+      
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "MacOS-$GITHUB_SHA"
+          release: "MacOS-$GITHUB_SHA"
+          draft: false
+          prerelease: false
+      
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: MacOS.zip
+          asset_name: MacOS.zip
+          asset_content_type: application/zip
