@@ -59,8 +59,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: "MacOS-$GITHUB_SHA"
-          release: "MacOS-$GITHUB_SHA"
+          tag_name: "MacOS-${{ github.sha }}"
+          release: "MacOS-${{ github.sha }}"
           draft: false
           prerelease: false
       
