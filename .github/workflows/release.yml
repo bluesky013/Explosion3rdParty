@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  release-macos:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Update SubModules
+        run: |
+          git submodule init
+          git submodule update
+          
+      - name: Create Archive Directories
+        run: |
+          mkdir MacOS
+          mkdir MacOS/entt
+          mkdir MacOS/entt/Include
+          mkdir MacOS/glm
+          mkdir MacOS/glm/Include
+          mkdir MacOS/rapidjson
+          mkdir MacOS/rapidjson/Include
+          mkdir MacOS/taskflow
+          mkdir MacOS/taskflow/Include
+          mkdir MacOS/glfw
+          mkdir MacOS/glfw/Include
+          mkdir MacOS/glfw/Lib
+          mkdir MacOS/glfw/Lib/Debug
+          mkdir MacOS/glfw/Lib/Release
+          mkdir MacOS/googletest
+          mkdir MacOS/googletest/Include
+          mkdir MacOS/googletest/Lib
+          mkdir MacOS/googletest/Lib/Debug
+          mkdir MacOS/googletest/Lib/Release
+
+      - name: Archiving EnTT
+        run: |
+          cp -r entt/single_include/entt MacOS/entt/Include
+      
+      - name: Archiving GLM
+        run: |
+          cp -r glm/glm MacOS/glm/Include/glm
+          rm MacOS/glm/Include/glm/CMakeLists.txt
+      
+      - name: Archiving rapidjson
+        run: |
+          cp -r rapidjson/include/rapidjson MacOS/rapidjson/Include/rapidjson
+      
+      - name: Archiving TaskFlow
+        run: |
+          cp -r taskflow/taskflow MacOS/taskflow/Include/taskflow
+          
+      - name: Building GLFW
+        run: |
+          mkdir glfw/build-debug
+          cmake -S glfw -B glfw/build-debug -DCMAKE_BUILD_TYPE=Debug -DGLFW_BUILD_EXAMPLES=false -DGLFW_BUILD_TESTS=false -DGLFW_BUILD_DOCS=false
+          cmake --build glfw/build-debug
+          mkdir glfw/build-release
+          cmake -S glfw -B glfw/build-release -DCMAKE_BUILD_TYPE=Release -DGLFW_BUILD_EXAMPLES=false -DGLFW_BUILD_TESTS=false -DGLFW_BUILD_DOCS=false
+          cmake --build glfw/build-release
+      
+      - name: Archiving GLFW
+        run: |
+          cp glfw/build-debug/src/libglfw3.a MacOS/glfw/Lib/Debug
+          cp glfw/build-release/src/libglfw3.a MacOS/glfw/Lib/Release
+          cp -r glfw/include/GLFW MacOS/glfw/Include/GLFW
+          
+      - name: Building GoogleTest
+        run: |
+          mkdir googletest/build-debug
+          cmake -S googletest -B googletest/build-debug -DCMAKE_BUILD_TYPE=Debug
+          cmake --build googletest/build-debug
+          mkdir googletest/build-release
+          cmake -S googletest -B googletest/build-release -DCMAKE_BUILD_TYPE=Release
+          cmake --build googletest/build-release
+      
+      - name: Archiving Google Test
+        run: |
+          cp googletest/build-debug/lib/libgtestd.a MacOS/googletest/Lib/Debug
+          cp googletest/build-release/lib/libgtest.a MacOS/googletest/Lib/Release
+          cp -r googletest/googletest/include/gtest MacOS/googletest/Include/gtest
+          cp -r googletest/googlemock/include/gmock MacOS/googletest/Include/gmock
+      
+      - name: Zip Release Package
+        run: |
+          zip -r MacOS MacOS
+      
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "MacOS-${{ github.sha }}"
+          release: "MacOS-${{ github.sha }}"
+          draft: false
+          prerelease: false
+      
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: MacOS.zip
+          asset_name: MacOS.zip
+          asset_content_type: application/zip
