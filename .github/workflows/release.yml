@@ -27,6 +27,8 @@ jobs:
           mkdir MacOS/glm/Include
           mkdir MacOS/rapidjson
           mkdir MacOS/rapidjson/Include
+          mkdir MacOS/taskflow
+          mkdir MacOS/taskflow/Include
           mkdir MacOS/glfw
           mkdir MacOS/glfw/Include
           mkdir MacOS/glfw/Lib
@@ -47,9 +49,13 @@ jobs:
           cp -r glm/glm MacOS/glm/Include/glm
           rm MacOS/glm/Include/glm/CMakeLists.txt
       
-      - name: Archiving Rapid JSON
+      - name: Archiving rapidjson
         run: |
           cp -r rapidjson/include/rapidjson MacOS/rapidjson/Include/rapidjson
+      
+      - name: Archiving TaskFlow
+        run: |
+          cp -r taskflow/taskflow MacOS/taskflow/Include/taskflow
           
       - name: Building GLFW
         run: |
@@ -66,7 +72,7 @@ jobs:
           cp glfw/build-release/src/libglfw3.a MacOS/glfw/Lib/Release
           cp -r glfw/include/GLFW MacOS/glfw/Include/GLFW
           
-      - name: Building Google Test
+      - name: Building GoogleTest
         run: |
           mkdir googletest/build-debug
           cmake -S googletest -B googletest/build-debug -DCMAKE_BUILD_TYPE=Debug
