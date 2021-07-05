@@ -16,3 +16,6 @@
 [submodule "taskflow"]
 	path = taskflow
 	url = https://github.com/ExplosionEngine/taskflow.git
+[submodule "glslang"]
+	path = glslang
+	url = https://github.com/KhronosGroup/glslang.git
