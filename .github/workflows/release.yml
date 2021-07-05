@@ -25,14 +25,22 @@ jobs:
           mkdir MacOS
           mkdir MacOS/entt
           mkdir MacOS/entt/Include
+          mkdir MacOS/glm
+          mkdir MacOS/glm/Include
           mkdir MacOS/glfw
           mkdir MacOS/glfw/Include
           mkdir MacOS/glfw/Lib
           mkdir MacOS/glfw/Lib/Debug
           mkdir MacOS/glfw/Lib/Release
+
       - name: Archiving EnTT
         run: |
           cp -r entt/single_include/entt MacOS/entt/Include
+      
+      - name: Archiving GLM
+        run: |
+          cp -r glm/glm MacOS/glm/Include/glm
+          rm MacOS/glm/Include/glm/CMakeLists.txt
           
       - name: Building GLFW
         run: |
