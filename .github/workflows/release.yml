@@ -6,8 +6,6 @@ on:
   pull_request:
     branches: [ master ]
 
-  workflow_dispatch:
-
 jobs:
   release-macos:
     runs-on: macos-latest
@@ -32,6 +30,11 @@ jobs:
           mkdir MacOS/glfw/Lib
           mkdir MacOS/glfw/Lib/Debug
           mkdir MacOS/glfw/Lib/Release
+          mkdir MacOS/googletest
+          mkdir MacOS/googletest/Include
+          mkdir MacOS/googletest/Lib
+          mkdir MacOS/googletest/Lib/Debug
+          mkdir MacOS/googletest/Lib/Release
 
       - name: Archiving EnTT
         run: |
@@ -56,6 +59,22 @@ jobs:
           cp glfw/build-debug/src/libglfw3.a MacOS/glfw/Lib/Debug
           cp glfw/build-release/src/libglfw3.a MacOS/glfw/Lib/Release
           cp -r glfw/include/GLFW MacOS/glfw/Include/GLFW
+          
+      - name: Building Google Test
+        run: |
+          mkdir googletest/build-debug
+          cmake -S googletest -B googletest/build-debug -DCMAKE_BUILD_TYPE=Debug
+          cmake --build googletest/build-debug
+          mkdir googletest/build-release
+          cmake -S googletest -B googletest/build-release -DCMAKE_BUILD_TYPE=Release
+          cmake --build googletest/build-release
+      
+      - name: Archiving Google Test
+        run: |
+          cp googletest/build-debug/lib/libgtestd.a MacOS/googletest/Lib/Debug
+          cp googletest/build-release/lib/libgtest.a MacOS/googletest/Lib/Release
+          cp -r googletest/googletest/include/gtest MacOS/googletest/Include/gtest
+          cp -r googletest/googlemock/include/gmock MacOS/googletest/Include/gmock
       
       - name: Zip Release Package
         run: |
