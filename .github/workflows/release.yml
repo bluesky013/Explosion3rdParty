@@ -25,6 +25,8 @@ jobs:
           mkdir MacOS/entt/Include
           mkdir MacOS/glm
           mkdir MacOS/glm/Include
+          mkdir MacOS/rapidjson
+          mkdir MacOS/rapidjson/Include
           mkdir MacOS/glfw
           mkdir MacOS/glfw/Include
           mkdir MacOS/glfw/Lib
@@ -44,6 +46,10 @@ jobs:
         run: |
           cp -r glm/glm MacOS/glm/Include/glm
           rm MacOS/glm/Include/glm/CMakeLists.txt
+      
+      - name: Archiving Rapid JSON
+        run: |
+          cp -r rapidjson/include/rapidjson MacOS/rapidjson/Include/rapidjson
           
       - name: Building GLFW
         run: |
