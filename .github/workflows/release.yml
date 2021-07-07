@@ -1,8 +1,11 @@
 name: CI
 
 on:
-  schedule:
-    - cron: '0 18 * * *'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release Version'
+        required: true
   push:
     branches: [ master ]
   pull_request:
@@ -118,11 +121,12 @@ jobs:
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
+        if: ${{ github.event.inputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: "MacOS-${{ github.sha }}"
-          release: "MacOS-${{ github.sha }}"
+          tag_name: "MacOS-${{ github.event.inputs.version }}"
+          release_name: "MacOS-${{ github.event.inputs.version }}"
           draft: false
           prerelease: false
       
