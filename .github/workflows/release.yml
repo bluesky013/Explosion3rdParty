@@ -70,10 +70,10 @@ jobs:
         run: |
           mkdir glfw/build-debug
           cmake -S glfw -B glfw/build-debug -DCMAKE_BUILD_TYPE=Debug -DGLFW_BUILD_EXAMPLES=false -DGLFW_BUILD_TESTS=false -DGLFW_BUILD_DOCS=false
-          cmake --build glfw/build-debug
+          cmake --build glfw/build-debug -j 8
           mkdir glfw/build-release
           cmake -S glfw -B glfw/build-release -DCMAKE_BUILD_TYPE=Release -DGLFW_BUILD_EXAMPLES=false -DGLFW_BUILD_TESTS=false -DGLFW_BUILD_DOCS=false
-          cmake --build glfw/build-release
+          cmake --build glfw/build-release -j 8
       
       - name: Archiving GLFW
         run: |
@@ -85,10 +85,10 @@ jobs:
         run: |
           mkdir googletest/build-debug
           cmake -S googletest -B googletest/build-debug -DCMAKE_BUILD_TYPE=Debug
-          cmake --build googletest/build-debug
+          cmake --build googletest/build-debug -j 8
           mkdir googletest/build-release
           cmake -S googletest -B googletest/build-release -DCMAKE_BUILD_TYPE=Release
-          cmake --build googletest/build-release
+          cmake --build googletest/build-release -j 8
       
       - name: Archiving Google Test
         run: |
@@ -101,11 +101,11 @@ jobs:
         run: |
           mkdir glslang/build-debug
           cmake -S glslang -B glslang/build-debug -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=false -DENABLE_CTEST=false -DCMAKE_INSTALL_PREFIX=glslang/build-debug
-          cmake --build glslang/build-debug --config debug
+          cmake --build glslang/build-debug --config debug -j 8
           cmake --install glslang/build-debug
           mkdir glslang/build-release
           cmake -S glslang -B glslang/build-release -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=false -DENABLE_CTEST=false -DCMAKE_INSTALL_PREFIX=glslang/build-release
-          cmake --build glslang/build-release --config release
+          cmake --build glslang/build-release --config release -j 8
           cmake --install glslang/build-release
 
       - name: Archiving Glslang
@@ -132,6 +132,7 @@ jobs:
       
       - name: Upload Release Assets
         uses: actions/upload-release-asset@v1
+        if: ${{ github.event.inputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
