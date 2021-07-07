@@ -1,6 +1,8 @@
 name: CI
 
 on:
+  schedule:
+    - cron: '0 18 * * *'
   push:
     branches: [ master ]
   pull_request:
@@ -39,6 +41,10 @@ jobs:
           mkdir MacOS/googletest/Lib
           mkdir MacOS/googletest/Lib/Debug
           mkdir MacOS/googletest/Lib/Release
+          mkdir MacOS/glslang
+          mkdir MacOS/glslang/Lib
+          mkdir MacOS/glslang/Lib/Debug
+          mkdir MacOS/glslang/Lib/Release
 
       - name: Archiving EnTT
         run: |
@@ -87,6 +93,23 @@ jobs:
           cp googletest/build-release/lib/libgtest.a MacOS/googletest/Lib/Release
           cp -r googletest/googletest/include/gtest MacOS/googletest/Include/gtest
           cp -r googletest/googlemock/include/gmock MacOS/googletest/Include/gmock
+
+      - name: Building Glslang
+        run: |
+          mkdir glslang/build-debug
+          cmake -S glslang -B glslang/build-debug -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=false -DENABLE_CTEST=false -DCMAKE_INSTALL_PREFIX=glslang/build-debug
+          cmake --build glslang/build-debug --config debug
+          cmake --install glslang/build-debug
+          mkdir glslang/build-release
+          cmake -S glslang -B glslang/build-release -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=false -DENABLE_CTEST=false -DCMAKE_INSTALL_PREFIX=glslang/build-release
+          cmake --build glslang/build-release --config release
+          cmake --install glslang/build-release
+
+      - name: Archiving Glslang
+        run: |
+          cp -r glslang/build-debug/lib/ MacOS/glslang/Lib/Debug
+          cp -r glslang/build-release/lib/ MacOS/glslang/Lib/Release
+          cp -r glslang/build-debug/include/ MacOS/glslang/Include
       
       - name: Zip Release Package
         run: |
