@@ -56,7 +56,7 @@ jobs:
       - name: Archiving GLM
         run: |
           cp -r glm/glm Win/glm/Include/glm
-          rm MacOS/glm/Include/glm/CMakeLists.txt
+          rm Win/glm/Include/glm/CMakeLists.txt
       
       - name: Archiving rapidjson
         run: |
