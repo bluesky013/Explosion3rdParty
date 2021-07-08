@@ -12,6 +12,147 @@ on:
     branches: [ master ]
 
 jobs:
+  release-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Update SubModules
+        run: |
+          git submodule init
+          git submodule update
+      
+      - name: Install Scoop
+        run: |
+          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+          $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("~\scoop\shims") | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      
+      - name: Install 7-zip
+        run: scoop install 7zip
+          
+      - name: Create Archive Directories
+        run: |
+          mkdir Win
+          mkdir Win/entt
+          mkdir Win/entt/Include
+          mkdir Win/glm
+          mkdir Win/glm/Include
+          mkdir Win/rapidjson
+          mkdir Win/rapidjson/Include
+          mkdir Win/taskflow
+          mkdir Win/taskflow/Include
+          mkdir Win/glfw
+          mkdir Win/glfw/Include
+          mkdir Win/glfw/Lib
+          mkdir Win/glfw/Lib/Debug
+          mkdir Win/glfw/Lib/Release
+          mkdir Win/googletest
+          mkdir Win/googletest/Include
+          mkdir Win/googletest/Lib
+          mkdir Win/googletest/Lib/Debug
+          mkdir Win/googletest/Lib/Release
+          mkdir Win/glslang
+          mkdir Win/glslang/Lib
+          mkdir Win/glslang/Lib/Debug
+          mkdir Win/glslang/Lib/Release
+
+      - name: Archiving EnTT
+        run: |
+          cp -r entt/single_include/entt Win/entt/Include
+      
+      - name: Archiving GLM
+        run: |
+          cp -r glm/glm Win/glm/Include/glm
+          rm Win/glm/Include/glm/CMakeLists.txt
+      
+      - name: Archiving rapidjson
+        run: |
+          cp -r rapidjson/include/rapidjson Win/rapidjson/Include/rapidjson
+      
+      - name: Archiving TaskFlow
+        run: |
+          cp -r taskflow/taskflow Win/taskflow/Include/taskflow
+          
+      - name: Building GLFW
+        run: |
+          mkdir glfw/build-debug
+          cmake -S glfw -B glfw/build -DGLFW_BUILD_EXAMPLES=false -DGLFW_BUILD_TESTS=false -DGLFW_BUILD_DOCS=false
+          cmake --build glfw/build --config Debug -j 8
+          cmake --build glfw/build --config Release -j 8
+      
+      - name: Archiving GLFW
+        run: |
+          cp glfw/build/src/Debug/glfw3.lib Win/glfw/Lib/Debug
+          cp glfw/build/src/Debug/glfw3.pdb Win/glfw/Lib/Debug
+          cp glfw/build/src/Release/glfw3.lib Win/glfw/Lib/Release
+          cp -r glfw/include/GLFW Win/glfw/Include/GLFW
+          
+      - name: Building GoogleTest
+        run: |
+          mkdir googletest/build-debug
+          cmake -S googletest -B googletest/build
+          cmake --build googletest/build --config Debug -j 8
+          cmake --build googletest/build --config Release -j 8
+      
+      - name: Archiving Google Test
+        run: |
+          cp googletest/build/lib/Debug/gtestd.lib Win/googletest/Lib/Debug
+          cp googletest/build/lib/Debug/gmockd.lib Win/googletest/Lib/Debug
+          cp googletest/build/lib/Debug/gtest_maind.lib Win/googletest/Lib/Debug
+          cp googletest/build/lib/Debug/gmock_maind.lib Win/googletest/Lib/Debug
+          cp googletest/build/lib/Debug/gtestd.pdb Win/googletest/Lib/Debug
+          cp googletest/build/lib/Debug/gmockd.pdb Win/googletest/Lib/Debug
+          cp googletest/build/lib/Debug/gtest_maind.pdb Win/googletest/Lib/Debug
+          cp googletest/build/lib/Debug/gmock_maind.pdb Win/googletest/Lib/Debug
+          cp googletest/build/lib/Release/gtest.lib Win/googletest/Lib/Release
+          cp googletest/build/lib/Release/gmock.lib Win/googletest/Lib/Release
+          cp googletest/build/lib/Release/gtest_main.lib Win/googletest/Lib/Release
+          cp googletest/build/lib/Release/gmock_main.lib Win/googletest/Lib/Release
+          cp -r googletest/googletest/include/gtest Win/googletest/Include/gtest
+          cp -r googletest/googlemock/include/gmock Win/googletest/Include/gmock
+
+      - name: Building Glslang
+        run: |
+          cmake -S glslang -B glslang/build-debug -DBUILD_TESTING=false -DENABLE_CTEST=false -DCMAKE_INSTALL_PREFIX=glslang/build-debug
+          cmake --build glslang/build-debug --config Debug -j 8
+          cmake --install glslang/build-debug --config Debug
+          cmake -S glslang -B glslang/build-release -DBUILD_TESTING=false -DENABLE_CTEST=false -DCMAKE_INSTALL_PREFIX=glslang/build-release
+          cmake --build glslang/build-release --config Release -j 8
+          cmake --install glslang/build-release --config Release
+
+      - name: Archiving Glslang
+        run: |
+          cp -r glslang/build-debug/lib Win/glslang/Lib/Debug
+          cp -r glslang/build-release/lib Win/glslang/Lib/Release
+          cp -r glslang/build-debug/include Win/glslang/Include
+      
+      - name: Zip Release Package
+        run: 7z a Win.zip Win
+      
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        if: ${{ github.event.inputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "Win-${{ github.event.inputs.version }}"
+          release_name: "Win-${{ github.event.inputs.version }}"
+          draft: false
+          prerelease: false
+      
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        if: ${{ github.event.inputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: Win.zip
+          asset_name: Win.zip
+          asset_content_type: application/zip
+
   release-macos:
     runs-on: macos-latest
 
@@ -93,7 +234,13 @@ jobs:
       - name: Archiving Google Test
         run: |
           cp googletest/build-debug/lib/libgtestd.a MacOS/googletest/Lib/Debug
+          cp googletest/build-debug/lib/libgmockd.a MacOS/googletest/Lib/Debug
+          cp googletest/build-debug/lib/libgtest_maind.a MacOS/googletest/Lib/Debug
+          cp googletest/build-debug/lib/libgmock_maind.a MacOS/googletest/Lib/Debug
           cp googletest/build-release/lib/libgtest.a MacOS/googletest/Lib/Release
+          cp googletest/build-release/lib/libgmock.a MacOS/googletest/Lib/Release
+          cp googletest/build-release/lib/libgtest_main.a MacOS/googletest/Lib/Release
+          cp googletest/build-release/lib/libgmock_main.a MacOS/googletest/Lib/Release
           cp -r googletest/googletest/include/gtest MacOS/googletest/Include/gtest
           cp -r googletest/googlemock/include/gmock MacOS/googletest/Include/gmock
 
@@ -101,12 +248,12 @@ jobs:
         run: |
           mkdir glslang/build-debug
           cmake -S glslang -B glslang/build-debug -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=false -DENABLE_CTEST=false -DCMAKE_INSTALL_PREFIX=glslang/build-debug
-          cmake --build glslang/build-debug --config debug -j 8
-          cmake --install glslang/build-debug
+          cmake --build glslang/build-debug --config Debug -j 8
+          cmake --install glslang/build-debug --config Debug
           mkdir glslang/build-release
           cmake -S glslang -B glslang/build-release -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=false -DENABLE_CTEST=false -DCMAKE_INSTALL_PREFIX=glslang/build-release
-          cmake --build glslang/build-release --config release -j 8
-          cmake --install glslang/build-release
+          cmake --build glslang/build-release --config Release -j 8
+          cmake --install glslang/build-release --config Release
 
       - name: Archiving Glslang
         run: |
