@@ -1,0 +1,7 @@
+exp_external_library(NAME entt)
+exp_external_library(NAME glfw)
+exp_external_library(NAME glm)
+exp_external_library(NAME glslang)
+exp_external_library(NAME googletest)
+exp_external_library(NAME rapidjson)
+exp_external_library(NAME taskflow)
