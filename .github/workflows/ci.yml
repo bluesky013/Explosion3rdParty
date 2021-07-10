@@ -56,6 +56,10 @@ jobs:
           mkdir Win/glslang/Lib
           mkdir Win/glslang/Lib/Debug
           mkdir Win/glslang/Lib/Release
+      
+      - name: Archiving CMakeLists
+        run: |
+          cp CMakeLists.txt Win
 
       - name: Archiving EnTT
         run: |
@@ -189,6 +193,10 @@ jobs:
           mkdir MacOS/glslang/Lib
           mkdir MacOS/glslang/Lib/Debug
           mkdir MacOS/glslang/Lib/Release
+      
+      - name: Archiving CMakeLists
+        run: |
+          cp CMakeLists.txt MacOS
 
       - name: Archiving EnTT
         run: |
