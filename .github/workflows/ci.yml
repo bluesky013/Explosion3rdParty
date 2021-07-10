@@ -23,13 +23,11 @@ jobs:
           git submodule init
           git submodule update
       
-      - name: Install Scoop
-        run: |
-          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-          $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("~\scoop\shims") | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      
       - name: Install 7-zip
-        run: scoop install 7zip
+        run: |
+          Invoke-WebRequest -Uri https://7-zip.org/a/7z1900-x64.msi -OutFile 7z.msi
+          msiexec.exe /package 7z.msi /qn
+          echo "C:\Program Files\7-Zip" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           
       - name: Create Archive Directories
         run: |
@@ -56,6 +54,10 @@ jobs:
           mkdir Win/glslang/Lib
           mkdir Win/glslang/Lib/Debug
           mkdir Win/glslang/Lib/Release
+      
+      - name: Archiving CMakeLists
+        run: |
+          cp CMakeLists.txt Win
 
       - name: Archiving EnTT
         run: |
@@ -189,6 +191,10 @@ jobs:
           mkdir MacOS/glslang/Lib
           mkdir MacOS/glslang/Lib/Debug
           mkdir MacOS/glslang/Lib/Release
+      
+      - name: Archiving CMakeLists
+        run: |
+          cp CMakeLists.txt MacOS
 
       - name: Archiving EnTT
         run: |
