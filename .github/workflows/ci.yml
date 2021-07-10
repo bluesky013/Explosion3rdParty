@@ -79,7 +79,7 @@ jobs:
       - name: Building GLFW
         run: |
           mkdir glfw/build-debug
-          cmake -S glfw -B glfw/build -DGLFW_BUILD_EXAMPLES=false -DGLFW_BUILD_TESTS=false -DGLFW_BUILD_DOCS=false
+          cmake -S glfw -B glfw/build -DGLFW_BUILD_EXAMPLES=false -DGLFW_BUILD_TESTS=false -DGLFW_BUILD_DOCS=false -DUSE_MSVC_RUNTIME_LIBRARY_DLL=OFF
           cmake --build glfw/build --config Debug -j 8
           cmake --build glfw/build --config Release -j 8
       
