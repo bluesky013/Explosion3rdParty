@@ -19,3 +19,9 @@
 [submodule "glslang"]
 	path = glslang
 	url = https://github.com/KhronosGroup/glslang.git
+[submodule "gflags"]
+	path = gflags
+	url = https://github.com/ExplosionEngine/gflags.git
+[submodule "assimp"]
+	path = assimp
+	url = https://github.com/ExplosionEngine/assimp.git
