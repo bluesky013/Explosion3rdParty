@@ -80,6 +80,24 @@ jobs:
       - name: Archiving TaskFlow
         run: |
           cp -r taskflow/taskflow Win/taskflow/Include/taskflow
+      
+      - name: Building GFlags
+        run: |
+          cmake -S gflags -B gflags/build-debug -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DBUILD_gflags_LIB=OFF -DBUILD_gflags_nothreads_LIB=ON -DBUILD_PACKAGING=OFF -DBUILD_TESTING=OFF -DINSTALL_HEADERS=ON -DINSTALL_SHARED_LIBS=OFF -DINSTALL_STATIC_LIBS=ON -DREGISTER_BUILD_DIR=OFF -DREGISTER_INSTALL_PREFIX=OFF -DCMAKE_INSTALL_PREFIX=gflags/build-debug/install
+          cmake --build gflags/build-debug --config Debug -j 8
+          cmake --install gflags/build-debug --config Debug
+          cmake -S gflags -B gflags/build-release -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DBUILD_gflags_LIB=OFF -DBUILD_gflags_nothreads_LIB=ON -DBUILD_PACKAGING=OFF -DBUILD_TESTING=OFF -DINSTALL_HEADERS=ON -DINSTALL_SHARED_LIBS=OFF -DINSTALL_STATIC_LIBS=ON -DREGISTER_BUILD_DIR=OFF -DREGISTER_INSTALL_PREFIX=OFF -DCMAKE_INSTALL_PREFIX=gflags/build-release/install
+          cmake --build gflags/build-release --config release -j 8
+          cmake --install gflags/build-release --config release
+      
+      - name: Archiving GFlags
+        run: |
+          cp -r gflags/build-debug/install/include Win/gflags/Include
+          ls Win/gflags/Include
+          cp -r gflags/build-debug/install/lib Win/gflags/Lib/Debug
+          ls Win/gflags/Lib/Debug
+          cp -r gflags/build-release/install/lib Win/gflags/Lib/Release
+          ls gflags/build-release/install/lib Win/gflags/Lib/Release
           
       - name: Building GLFW
         run: |
@@ -94,21 +112,6 @@ jobs:
           cp glfw/build/src/Debug/glfw3.pdb Win/glfw/Lib/Debug
           cp glfw/build/src/Release/glfw3.lib Win/glfw/Lib/Release
           cp -r glfw/include/GLFW Win/glfw/Include/GLFW
-      
-      - name: Building GFlags
-        run: |
-          cmake -S gflags -B gflags/build-debug -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DBUILD_gflags_LIB=OFF -DBUILD_gflags_nothreads_LIB=ON -DBUILD_PACKAGING=OFF -DBUILD_TESTING=OFF -DINSTALL_HEADERS=ON -DINSTALL_SHARED_LIBS=OFF -DINSTALL_STATIC_LIBS=ON -DREGISTER_BUILD_DIR=OFF -DREGISTER_INSTALL_PREFIX=OFF -DCMAKE_INSTALL_PREFIX=gflags/build-debug/install
-          cmake --build gflags/build-debug --config Debug -j 8
-          cmake --install gflags/build-debug --config Debug
-          cmake -S gflags -B gflags/build-release -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DBUILD_gflags_LIB=OFF -DBUILD_gflags_nothreads_LIB=ON -DBUILD_PACKAGING=OFF -DBUILD_TESTING=OFF -DINSTALL_HEADERS=ON -DINSTALL_SHARED_LIBS=OFF -DINSTALL_STATIC_LIBS=ON -DREGISTER_BUILD_DIR=OFF -DREGISTER_INSTALL_PREFIX=OFF -DCMAKE_INSTALL_PREFIX=gflags/build-release/install
-          cmake --build gflags/build-release --config release -j 8
-          cmake --install gflags/build-release --config release
-      
-      - name: Archiving GFlags
-        run: |
-          cp -r gflags/build-debug/install/include Win/gflags/Include
-          cp -r gflags/build-debug/install/lib Win/gflags/Lib/Debug
-          cp -r gflags/build-release/install/lib Win/gflags/Lib/Release
       
       - name: Building GoogleTest
         run: |
@@ -237,21 +240,6 @@ jobs:
       - name: Archiving TaskFlow
         run: |
           cp -r taskflow/taskflow MacOS/taskflow/Include/taskflow
-          
-      - name: Building GLFW
-        run: |
-          mkdir glfw/build-debug
-          cmake -S glfw -B glfw/build-debug -DCMAKE_BUILD_TYPE=Debug -DGLFW_BUILD_EXAMPLES=false -DGLFW_BUILD_TESTS=false -DGLFW_BUILD_DOCS=false
-          cmake --build glfw/build-debug -j 8
-          mkdir glfw/build-release
-          cmake -S glfw -B glfw/build-release -DCMAKE_BUILD_TYPE=Release -DGLFW_BUILD_EXAMPLES=false -DGLFW_BUILD_TESTS=false -DGLFW_BUILD_DOCS=false
-          cmake --build glfw/build-release -j 8
-      
-      - name: Archiving GLFW
-        run: |
-          cp glfw/build-debug/src/libglfw3.a MacOS/glfw/Lib/Debug
-          cp glfw/build-release/src/libglfw3.a MacOS/glfw/Lib/Release
-          cp -r glfw/include/GLFW MacOS/glfw/Include/GLFW
       
       - name: Building GFlags
         run: |
@@ -267,6 +255,21 @@ jobs:
           cp -r gflags/build-debug/install/include/ MacOS/gflags/Include
           cp -r gflags/build-debug/install/lib/ MacOS/gflags/Lib/Debug
           cp -r gflags/build-release/install/lib/ MacOS/gflags/Lib/Release
+          
+      - name: Building GLFW
+        run: |
+          mkdir glfw/build-debug
+          cmake -S glfw -B glfw/build-debug -DCMAKE_BUILD_TYPE=Debug -DGLFW_BUILD_EXAMPLES=false -DGLFW_BUILD_TESTS=false -DGLFW_BUILD_DOCS=false
+          cmake --build glfw/build-debug -j 8
+          mkdir glfw/build-release
+          cmake -S glfw -B glfw/build-release -DCMAKE_BUILD_TYPE=Release -DGLFW_BUILD_EXAMPLES=false -DGLFW_BUILD_TESTS=false -DGLFW_BUILD_DOCS=false
+          cmake --build glfw/build-release -j 8
+      
+      - name: Archiving GLFW
+        run: |
+          cp glfw/build-debug/src/libglfw3.a MacOS/glfw/Lib/Debug
+          cp glfw/build-release/src/libglfw3.a MacOS/glfw/Lib/Release
+          cp -r glfw/include/GLFW MacOS/glfw/Include/GLFW
           
       - name: Building GoogleTest
         run: |
