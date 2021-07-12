@@ -91,14 +91,14 @@ jobs:
           cmake --install gflags/build-release --config release
       
       - name: Archiving GFlags
-        shell: bash
         run: |
-          cp -r gflags/build-debug/install/include/ Win/gflags/Include
+          mkdir Win/gflags/Include/Debug
+          cp -r gflags/build-debug/install/include/* Win/gflags/Include
           ls Win/gflags/Include
-          cp -r gflags/build-debug/install/lib/ Win/gflags/Lib/Debug
+          cp -r gflags/build-debug/install/lib/* Win/gflags/Lib/Debug
           ls Win/gflags/Lib/Debug
-          cp -r gflags/build-release/install/lib/ Win/gflags/Lib/Release
-          ls gflags/build-release/install/lib
+          cp -r gflags/build-release/install/lib/* Win/gflags/Lib/Release
+          ls Win/gflags/Lib/Release
           
       - name: Building GLFW
         run: |
