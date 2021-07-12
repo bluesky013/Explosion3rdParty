@@ -106,10 +106,9 @@ jobs:
       
       - name: Archiving GFlags
         run: |
-          cp -r gflags/build-debug/install/include/ Win/gflags/Include
-          cp -r gflags/build-debug/install/lib/ Win/gflags/Lib/Debug
-          cp -r gflags/build-release/install/include/ Win/gflags/Include
-          cp -r gflags/build-release/install/lib/ Win/gflags/Lib/Release
+          cp -r gflags/build-debug/install/include Win/gflags/Include
+          cp -r gflags/build-debug/install/lib Win/gflags/Lib/Debug
+          cp -r gflags/build-release/install/lib Win/gflags/Lib/Release
       
       - name: Building GoogleTest
         run: |
@@ -267,7 +266,6 @@ jobs:
         run: |
           cp -r gflags/build-debug/install/include/ MacOS/gflags/Include
           cp -r gflags/build-debug/install/lib/ MacOS/gflags/Lib/Debug
-          cp -r gflags/build-release/install/include/ MacOS/gflags/Include
           cp -r gflags/build-release/install/lib/ MacOS/gflags/Lib/Release
           
       - name: Building GoogleTest
