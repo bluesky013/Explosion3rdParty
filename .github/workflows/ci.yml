@@ -50,6 +50,11 @@ jobs:
           mkdir Win/gflags/Lib
           mkdir Win/gflags/Lib/Debug
           mkdir Win/gflags/Lib/Release
+          mkdir Win/assimp
+          mkdir Win/assimp/Include
+          mkdir Win/assimp/Lib
+          mkdir Win/assimp/Lib/Debug
+          mkdir Win/assimp/Lib/Release
           mkdir Win/googletest
           mkdir Win/googletest/Include
           mkdir Win/googletest/Lib
@@ -95,6 +100,19 @@ jobs:
           cp -r gflags/build-debug/install/include/* Win/gflags/Include
           cp -r gflags/build-debug/install/lib/* Win/gflags/Lib/Debug
           cp -r gflags/build-release/install/lib/* Win/gflags/Lib/Release
+      
+      - name: Building Assimp
+        run: |
+          cmake -S assimp -B assimp/build-debug -DBUILD_SHARED_LIBS=OFF -DASSIMP_BUILD_TESTS=OFF
+          cmake --build assimp/build-debug --config Debug -j 8
+          cmake -S assimp -B assimp/build-release -DBUILD_SHARED_LIBS=OFF -DASSIMP_BUILD_TESTS=OFF
+          cmake --build assimp/build-debug --config Release -j 8
+      
+      - name: Archiving Assimp
+        run: |
+          cp -r assimp/build-debug/include/* Win/assimp/Inlcude
+          cp -r assimp/build-debug/lib/* Win/assimp/Lib/Debug
+          cp -r assimp/build-release/lib/* Win/assimp/Lib/Release
           
       - name: Building GLFW
         run: |
@@ -207,6 +225,11 @@ jobs:
           mkdir MacOS/gflags/Lib
           mkdir MacOS/gflags/Lib/Debug
           mkdir MacOS/gflags/Lib/Release
+          mkdir MacOS/assimp
+          mkdir MacOS/assimp/Include
+          mkdir MacOS/assimp/Lib
+          mkdir MacOS/assimp/Lib/Debug
+          mkdir MacOS/assimp/Lib/Release
           mkdir MacOS/googletest
           mkdir MacOS/googletest/Include
           mkdir MacOS/googletest/Lib
@@ -240,18 +263,31 @@ jobs:
       
       - name: Building GFlags
         run: |
-          cmake -S gflags -B gflags/build-debug -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DBUILD_gflags_LIB=OFF -DBUILD_gflags_nothreads_LIB=ON -DBUILD_PACKAGING=OFF -DBUILD_TESTING=OFF -DINSTALL_HEADERS=ON -DINSTALL_SHARED_LIBS=OFF -DINSTALL_STATIC_LIBS=ON -DREGISTER_BUILD_DIR=OFF -DREGISTER_INSTALL_PREFIX=OFF -DCMAKE_INSTALL_PREFIX=gflags/build-debug/install
-          cmake --build gflags/build-debug --config Debug -j 8
-          cmake --install gflags/build-debug --config Debug
-          cmake -S gflags -B gflags/build-release -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DBUILD_gflags_LIB=OFF -DBUILD_gflags_nothreads_LIB=ON -DBUILD_PACKAGING=OFF -DBUILD_TESTING=OFF -DINSTALL_HEADERS=ON -DINSTALL_SHARED_LIBS=OFF -DINSTALL_STATIC_LIBS=ON -DREGISTER_BUILD_DIR=OFF -DREGISTER_INSTALL_PREFIX=OFF -DCMAKE_INSTALL_PREFIX=gflags/build-release/install
-          cmake --build gflags/build-release --config release -j 8
-          cmake --install gflags/build-release --config release
+          cmake -S gflags -B gflags/build-debug -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DBUILD_gflags_LIB=OFF -DBUILD_gflags_nothreads_LIB=ON -DBUILD_PACKAGING=OFF -DBUILD_TESTING=OFF -DINSTALL_HEADERS=ON -DINSTALL_SHARED_LIBS=OFF -DINSTALL_STATIC_LIBS=ON -DREGISTER_BUILD_DIR=OFF -DREGISTER_INSTALL_PREFIX=OFF -DCMAKE_INSTALL_PREFIX=gflags/build-debug/install
+          cmake --build gflags/build-debug -j 8
+          cmake --install gflags/build-debug
+          cmake -S gflags -B gflags/build-release -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DBUILD_gflags_LIB=OFF -DBUILD_gflags_nothreads_LIB=ON -DBUILD_PACKAGING=OFF -DBUILD_TESTING=OFF -DINSTALL_HEADERS=ON -DINSTALL_SHARED_LIBS=OFF -DINSTALL_STATIC_LIBS=ON -DREGISTER_BUILD_DIR=OFF -DREGISTER_INSTALL_PREFIX=OFF -DCMAKE_INSTALL_PREFIX=gflags/build-release/install
+          cmake --build gflags/build-release -j 8
+          cmake --install gflags/build-release
       
       - name: Archiving GFlags
         run: |
           cp -r gflags/build-debug/install/include/ MacOS/gflags/Include
           cp -r gflags/build-debug/install/lib/ MacOS/gflags/Lib/Debug
           cp -r gflags/build-release/install/lib/ MacOS/gflags/Lib/Release
+      
+      - name: Building Assimp
+        run: |
+          cmake -S assimp -B assimp/build-debug -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=OFF -DASSIMP_BUILD_TESTS=OFF
+          cmake --build assimp/build-debug -j 8
+          cmake -S assimp -B assimp/build-release -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DASSIMP_BUILD_TESTS=OFF
+          cmake --build assimp/build-debug -j 8
+      
+      - name: Archiving Assimp
+        run: |
+          cp -r assimp/build-debug/include/ Win/assimp/Inlcude
+          cp -r assimp/build-debug/lib/ Win/assimp/Lib/Debug
+          cp -r assimp/build-release/lib/ Win/assimp/Lib/Release
           
       - name: Building GLFW
         run: |
