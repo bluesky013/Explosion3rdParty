@@ -111,6 +111,7 @@ jobs:
       - name: Archiving Assimp
         run: |
           cp -r assimp/include/* Win/assimp/Include
+          cp assimp/build-debug/include/assimp/config.h Win/assimp/Include/assimp
           cp assimp/build-debug/lib/Debug/assimp-vc142-mtd.lib Win/assimp/Lib/Debug
           cp assimp/build-debug/lib/Debug/assimp-vc142-mtd.pdb Win/assimp/Lib/Debug
           cp assimp/build-release/lib/Release/assimp-vc142-mt.lib Win/assimp/Lib/Release
@@ -287,6 +288,7 @@ jobs:
       - name: Archiving Assimp
         run: |
           cp -r assimp/include/ MacOS/assimp/Include
+          cp assimp/build-debug/include/assimp/config.h MacOS/assimp/Include/assimp
           cp -r assimp/build-debug/lib/ MacOS/assimp/Lib/Debug
           cp -r assimp/build-release/lib/ MacOS/assimp/Lib/Release
           
