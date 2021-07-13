@@ -110,6 +110,7 @@ jobs:
       
       - name: Archiving Assimp
         run: |
+          ls assimp/build-debug
           cp -r assimp/build-debug/include/* Win/assimp/Inlcude
           cp -r assimp/build-debug/lib/* Win/assimp/Lib/Debug
           cp -r assimp/build-release/lib/* Win/assimp/Lib/Release
@@ -285,9 +286,9 @@ jobs:
       
       - name: Archiving Assimp
         run: |
-          cp -r assimp/build-debug/include/ Win/assimp/Inlcude
-          cp -r assimp/build-debug/lib/ Win/assimp/Lib/Debug
-          cp -r assimp/build-release/lib/ Win/assimp/Lib/Release
+          cp -r assimp/build-debug/include/ MacOS/assimp/Inlcude
+          cp -r assimp/build-debug/lib/ MacOS/assimp/Lib/Debug
+          cp -r assimp/build-release/lib/ MacOS/assimp/Lib/Release
           
       - name: Building GLFW
         run: |
