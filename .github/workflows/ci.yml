@@ -106,12 +106,11 @@ jobs:
           cmake -S assimp -B assimp/build-debug -DBUILD_SHARED_LIBS=OFF -DASSIMP_BUILD_TESTS=OFF
           cmake --build assimp/build-debug --config Debug -j 8
           cmake -S assimp -B assimp/build-release -DBUILD_SHARED_LIBS=OFF -DASSIMP_BUILD_TESTS=OFF
-          cmake --build assimp/build-debug --config Release -j 8
+          cmake --build assimp/build-release --config Release -j 8
       
       - name: Archiving Assimp
         run: |
-          ls assimp/build-debug
-          cp -r assimp/build-debug/include/* Win/assimp/Inlcude
+          cp -r assimp/build-debug/include/* Win/assimp/Include
           cp -r assimp/build-debug/lib/* Win/assimp/Lib/Debug
           cp -r assimp/build-release/lib/* Win/assimp/Lib/Release
           
@@ -282,11 +281,11 @@ jobs:
           cmake -S assimp -B assimp/build-debug -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=OFF -DASSIMP_BUILD_TESTS=OFF
           cmake --build assimp/build-debug -j 8
           cmake -S assimp -B assimp/build-release -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DASSIMP_BUILD_TESTS=OFF
-          cmake --build assimp/build-debug -j 8
+          cmake --build assimp/build-release -j 8
       
       - name: Archiving Assimp
         run: |
-          cp -r assimp/build-debug/include/ MacOS/assimp/Inlcude
+          cp -r assimp/build-debug/include/ MacOS/assimp/Include
           cp -r assimp/build-debug/lib/ MacOS/assimp/Lib/Debug
           cp -r assimp/build-release/lib/ MacOS/assimp/Lib/Release
           
