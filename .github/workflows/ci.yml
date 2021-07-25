@@ -156,10 +156,10 @@ jobs:
 
       - name: Building Glslang
         run: |
-          cmake -S glslang -B glslang/build-debug -DBUILD_TESTING=false -DENABLE_CTEST=false -DCMAKE_INSTALL_PREFIX=glslang/build-debug
+          cmake -S glslang -B glslang/build-debug -DBUILD_TESTING=false -DENABLE_CTEST=false -DCMAKE_INSTALL_PREFIX=glslang/build-debug -DLLVM_USE_CRT_DEBUG=MTd
           cmake --build glslang/build-debug --config Debug -j 8
           cmake --install glslang/build-debug --config Debug
-          cmake -S glslang -B glslang/build-release -DBUILD_TESTING=false -DENABLE_CTEST=false -DCMAKE_INSTALL_PREFIX=glslang/build-release
+          cmake -S glslang -B glslang/build-release -DBUILD_TESTING=false -DENABLE_CTEST=false -DCMAKE_INSTALL_PREFIX=glslang/build-release -DLLVM_USE_CRT_RELEASE=MT
           cmake --build glslang/build-release --config Release -j 8
           cmake --install glslang/build-release --config Release
 
