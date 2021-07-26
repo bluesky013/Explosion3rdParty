@@ -165,9 +165,9 @@ jobs:
 
       - name: Archiving Glslang
         run: |
-          cp -r glslang/build-debug/lib Win/glslang/Lib/Debug
-          cp -r glslang/build-release/lib Win/glslang/Lib/Release
-          cp -r glslang/build-debug/include Win/glslang/Include
+          cp glslang/build-debug/lib/*.lib Win/glslang/Lib/Debug
+          cp glslang/build-release/lib/*.lib Win/glslang/Lib/Release
+          cp -r glslang/build-debug/include/ Win/glslang/Include
       
       - name: Zip Release Package
         run: 7z a Win.zip Win
